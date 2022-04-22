@@ -9,6 +9,7 @@ function App() {
     "맛집 추천",
   ]);
   const [like, setLike] = useState(0);
+  const [open, setOpen] = useState(false);
 
   const handleLike = () => {
     setLike(like + 1);
@@ -33,8 +34,40 @@ function App() {
         <h4>{titles[2]}</h4>
         <p>2월 17일 발행</p>
       </div>
+
+      <button
+        onClick={() => {
+          const copy = [...titles];
+          copy.sort();
+          setTitles(copy);
+        }}
+      >
+        정렬
+      </button>
+      <button
+        onClick={() => {
+          const copy = [...titles];
+          copy[0] = "20대 코트 추천";
+          setTitles(copy);
+        }}
+      >
+        수정
+      </button>
+      <button onClick={() => setOpen(!open)}>Modal</button>
+
+      {open ? <Modal></Modal> : null}
     </div>
   );
 }
+
+const Modal = () => {
+  return (
+    <div className="modal">
+      <h4>제목</h4>
+      <p>날짜</p>
+      <p>상세내용</p>
+    </div>
+  );
+};
 
 export default App;
