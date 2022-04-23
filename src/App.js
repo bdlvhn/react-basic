@@ -1,73 +1,123 @@
 import "./App.css";
-import { useState } from "react";
+import React, { useState } from "react";
 
 function App() {
-  let post = "강남 우동 맛집!";
   const [titles, setTitles] = useState([
     "남자 코트 추천",
     "여자 코트 추천",
     "맛집 추천",
   ]);
-  const [like, setLike] = useState(0);
+  const [like, setLike] = useState(new Array(titles.length).fill(0));
   const [open, setOpen] = useState(false);
+  const [select, setSelect] = useState(0);
+  const [value, setValue] = useState("");
 
-  const handleLike = () => {
-    setLike(like + 1);
+  const handleLike = (i) => {
+    const copy = [...like];
+    copy[i] = copy[i] + 1;
+    setLike(copy);
   };
 
   return (
     <div className="app">
       <div className="black-nav">
         <h4>Blog</h4>
-      </div>
-      <div className="list">
-        <h4>
-          {titles[0]} <span onClick={handleLike}>♥</span> {like}
-        </h4>
-        <p>2월 17일 발행</p>
-      </div>
-      <div className="list">
-        <h4>{titles[1]}</h4>
-        <p>2월 17일 발행</p>
-      </div>
-      <div className="list">
-        <h4>{titles[2]}</h4>
-        <p>2월 17일 발행</p>
+        <div>
+          <input
+            onChange={(e) => {
+              setValue(e.target.value);
+            }}
+          ></input>
+          <button
+            onClick={() => {
+              setTitles([value, ...titles]);
+              setLike([0, ...like]);
+            }}
+          >
+            Publish
+          </button>
+        </div>
       </div>
 
-      <button
-        onClick={() => {
-          const copy = [...titles];
-          copy.sort();
-          setTitles(copy);
-        }}
-      >
-        정렬
-      </button>
-      <button
-        onClick={() => {
-          const copy = [...titles];
-          copy[0] = "20대 코트 추천";
-          setTitles(copy);
-        }}
-      >
-        수정
-      </button>
-      <button onClick={() => setOpen(!open)}>Modal</button>
+      <div className="list">
+        {titles.map((t, i) => (
+          <React.Fragment key={i}>
+            <h4
+              onClick={() => {
+                setOpen(true);
+                setSelect(i);
+              }}
+            >
+              {t}{" "}
+              <span
+                style={{
+                  cursor: "pointer",
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleLike(i);
+                }}
+              >
+                ♥
+              </span>{" "}
+              {like[i]}
+            </h4>
+            <p>2월 17일 발행</p>
+            <button
+              onClick={() => {
+                const c = [...titles];
+                c.splice(i, 1);
+                setTitles(c);
+                const d = [...like];
+                like.splice(i, 1);
+                setLike(d);
+              }}
+            >
+              삭제
+            </button>
+          </React.Fragment>
+        ))}
+      </div>
 
-      {open ? <Modal></Modal> : null}
+      <Profile />
+
+      {open ? (
+        <Modal titles={titles} select={select} open={setOpen} color="skyblue" />
+      ) : null}
     </div>
   );
 }
 
-const Modal = () => {
+const Modal = (props) => {
   return (
-    <div className="modal">
-      <h4>제목</h4>
+    <div className="modal" style={{ background: props.color }}>
+      <h4>{props.titles[props.select]}</h4>
       <p>날짜</p>
       <p>상세내용</p>
+      <button onClick={() => props.open(false)}>Close</button>
     </div>
   );
 };
+
+class Profile extends React.Component {
+  constructor() {
+    super();
+    this.state = { name: "kim" };
+  }
+
+  changeName = () => {
+    this.setState({ name: "park" });
+  };
+
+  render() {
+    return (
+      <div>
+        <h3>테스트입니다</h3>
+        <p>저는 {this.state.name} 입니다</p>
+        <button onClick={this.changeName}>버튼</button>
+      </div>
+    );
+  }
+}
 
 export default App;
